@@ -1,1 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    <script type="text/javascript" src="/js/lib/dummy.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+    <style type="text/css">
+
+    </style>
+    <title> by mdupre2</title>
+    <script type='text/javascript'>
+        //<![CDATA[
+
+        var t = 0;
+        var waveLen = 100;
+        var period = 1.4;
+        var waveHgt = 10;
+        var velocity = 100;
+        var depth = 220;
+        var period = 2.0
+        var t_inc = 1.0 / (30.0 * period);
+        var ppm = 10;
+        var g = 9.8 * ppm;
+        var beachHeight = 100;
+        var showShallowLine = false;
+        beachIncline = 0.14;
+
+        function wave() {
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            var cnvH = c.height;
+            var cnvW = c.width;
+            ctx.fillStyle = "#63D1F4";
+            ctx.clearRect(0, 0, cnvW, cnvH);
+            var a = waveLen / 6.28;
+            var b = 0.5 * waveHgt;
+            var x = 0;
+            var phi = -waveLen;
+            var wl_adj = 0;
+            var wh_copy = waveHgt;
+            ctx.moveTo(0, (cnvH - depth));
+            ctx.beginPath();
+            while (x < cnvW + 70) {
+                x = a * phi - b * Math.sin(phi - t * 2 * Math.PI) - a;
+                y = (cnvH - depth) - (b * Math.cos(phi - t * 2 * Math.PI));
+                if (x > ((depth - (waveLen / 2)) - beachHeight) / beachIncline) {
+                    x -= 6 * ((x - (depth - (waveLen / 2) - beachHeight) / beachIncline) / cnvW) * (a - b * Math.cos(phi - t * 2 * Math.PI));
+                }
+                ctx.lineTo(x, y);
+                phi += 0.01;
+            }
+            ctx.lineTo(cnvW, cnvH);
+            ctx.lineTo(0, cnvH);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+
+            var row = 0;
+            var dot_inc = 0.75;
+            ctx.fillStyle = "007FFF";
+            var voffset = 0;
+            while (depth - voffset > 0) {
+                if (voffset < waveLen / 2) {
+                    var wv = waveHgt - (waveHgt * (voffset / (waveLen / 2)));
+                    b = wv * 0.5;
+                }
+                else {
+                    b = 0;
+                }
+                x = 0;
+
+                if (row % 2 == 0) {
+                    phi = -1 * (dot_inc / 2);
+                }
+                else {
+                    phi = 0;
+                }
+                row++;
+                while (x < cnvW + 70) {
+                    x = a * phi - b * Math.sin(phi - t * 2 * Math.PI) - a;
+                    y = (cnvH - depth) - (b * Math.cos(phi - t * 2 * Math.PI));
+                    if (x > ((depth - (waveLen / 2)) - beachHeight) / beachIncline) {
+                        x -= 6 * ((x - (depth - (waveLen / 2) - beachHeight) / beachIncline) / cnvW) * (a - b * Math.cos(phi - t * 2 * Math.PI));
+                    }
+                    ctx.fillRect(x, y + voffset, 3, 3);
+                    phi += dot_inc;
+                }
+                voffset += 10;
+            }
+
+            //beach floor
+            ctx.fillStyle = "c2b280";
+            ctx.moveTo(0, cnvH);
+
+            ctx.beginPath();
+            ctx.moveTo(0, cnvH - beachHeight);
+            ctx.lineTo(cnvW, cnvH - (cnvW * beachIncline + beachHeight));
+            ctx.lineTo(cnvW, cnvH);
+            ctx.lineTo(0, cnvH);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+
+            if (showShallowLine) {
+                ctx.save();
+                ctx.strokeStyle = "FF0000";
+                ctx.beginPath();
+                ctx.setLineDash([5]);
+                ctx.moveTo(0, cnvH - depth + (waveLen / 2));
+                ctx.lineTo(cnvW, cnvH - depth + (waveLen / 2));
+                ctx.stroke();
+                ctx.restore();
+            }
+            t = t + t_inc;
+        }
+
+        var myVar = setInterval(wave, ((1.0 / 30.0) / 0.001));
+
+        function myFunction() {
+            var ratio = Number(document.getElementById("wh").value) / Number(document.getElementById("wl").value);
+            var valid = true
+
+            if (Number(document.getElementById("wl").value) > 300) {
+                alert("The  wave length greater than 300.");
+                waveLen = 300;
+                document.getElementById("wl").value = 300;
+                //valid = false;
+            }
+            if (Number(document.getElementById("bh").value) > 500) {
+                alert("The  beach height length cannot be greater than 500.");
+                waveLen = 500;
+                document.getElementById("bh").value = 500;
+                //valid = false;
+            }
+            if (Number(document.getElementById("wd").value) > 400) {
+                alert("The  water depth cannot be greater than 400.");
+                depth = 400;
+                document.getElementById("wd").value = 400;
+                //valid = false;
+            }
+            if (ratio > 1.0 / 7.0) {
+                alert("The ratio of wave height and wave length cannot excede 1/7.");
+                document.getElementById("wh").value = (1.0 / 0.7) * Number(document.getElementById("wl").value);
+                waveHgt = Number(document.getElementById("wh").value);
+                //valid = false;
+            }
+            if (valid) {
+                waveLen = Number(document.getElementById("wl").value);
+                waveHgt = Number(document.getElementById("wh").value);
+                beachHeight = Number(document.getElementById("bh").value);
+                depth = Number(document.getElementById("wd").value);
+                showShallowLine = document.getElementById("sl").checked;
+            }
+        }
+
+
+
+        //]]>
+    </script>
+
+
+</head>
+
+<body>
+
+
+    Wave Height:<br>
+    <input type="number" id="wh" name="wh" value="10" min="1" max="200">
+    <br> Wave Length:<br>
+    <input type="number" id="wl" name="wl" min="1" max="200" value="100">
+    <br> Water Depth:<br>
+    <input type="number" id="wd" name="wd" min="1" max="1000" value="220">
+    <br> Beach Height:<br>
+    <input type="number" id="bh" name="bh" min="0" max="500" value="100">
+    <br>
+    <input type="checkbox" id="sl" name="sl" />Wave Base Level<br />
+    <br><br>
+    <input type="submit" id="hit" value="Update" onclick="myFunction()" class="btn"> <br><br>
+
+    <canvas id="myCanvas" width="800" height="400" style="border:1px solid #d3d3d3;">
+  
+</body>
+
+
+</html>
 
