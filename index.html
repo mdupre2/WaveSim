@@ -48,14 +48,9 @@ input{
         
         //wave variables
         var waveLen = 100;
-        var period = 1.4;
+        var period = 2.0;
         var waveHgt = 10;
-        var velocity = 100;
         var depth = 220;
-        var period = 2.0
-        
-        //unit conversion variable
-        var ppm = 10; //pixles per meter
         
         //beach floor variabl
         var beachHeight = 100;
@@ -214,7 +209,7 @@ input{
 
         function update() {
             var ratio = Number(document.getElementById("wh").value) / Number(document.getElementById("wl").value);
-            var valid = true
+            var valid = true;
 
             if (Number(document.getElementById("wl").value) > 300) {
                 alert("The  wave length greater than 300.");
